@@ -1,2 +1,2 @@
-# tyshler_training_system
+# Tyshler Training System
 Tyshler's training programme
