@@ -2,26 +2,24 @@ package com.barneswebb.android.tts.trainingrec;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
-import android.widget.TextView;
 
 import com.barneswebb.android.tts.R;
 
 public class MyTrainingRecordActivity extends AppCompatActivity implements TrainingFragment.OnListFragmentInteractionListener  {
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mytrainingrecord);
 
-        ((TextView)findViewById(R.id.my_trainingheading)).setText( "Training record of " +
+        MyTrainingRecordActivity.this.setTitle(
                 PreferenceManager.getDefaultSharedPreferences(MyTrainingRecordActivity.this).getString("username", "<not set>")
-                +":"
+                        + "'s Training Record"
         );
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -50,6 +48,7 @@ public class MyTrainingRecordActivity extends AppCompatActivity implements Train
 
     @Override
     public void onListFragmentInteraction(ExerciseSession item) {
+        Log.d("ttsTraininRecAct", "wot goes 'ere?");
         //wot goes 'ere?
     }
 }

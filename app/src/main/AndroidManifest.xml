@@ -42,7 +42,6 @@
             android:name=".trainingrec.MyTrainingRecordActivity"
             android:label="@string/title_activity_training_record"
             android:parentActivityName=".MainActivity"
-            android:theme="@style/AppTheme.NoActionBar"
             android:configChanges="orientation"
             android:screenOrientation="portrait"
             />

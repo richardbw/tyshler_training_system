@@ -99,8 +99,7 @@ public class ExerciseDataOpenHelper extends SQLiteOpenHelper
             String[]SELECTIONARGS   = null;
             String  GROUPBY         = null;
             String  HAVING          = null;
-            //String  ORDERBY         = "userName, excerzDate";
-            String  ORDERBY         = "excerzDate";
+            String  ORDERBY         = "excerzDate DESC";
             String  LIMIT           = null;
 
             cur = db.query(DISTINCT, TRAININGHISTORY_TABLE_NAME, FIELD_NAMES, WHERE, SELECTIONARGS, GROUPBY, HAVING, ORDERBY, LIMIT);
