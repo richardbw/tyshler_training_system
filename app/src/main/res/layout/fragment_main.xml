@@ -6,6 +6,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
+    android:background="@drawable/customborder"
     tools:context=".MainActivity$ProgrammeFragment">
 
     <ScrollView
@@ -42,7 +43,9 @@
         android:layout_height="wrap_content"
         android:layout_alignBaseline="@+id/start_button"
         android:layout_alignBottom="@+id/start_button"
-        android:layout_alignStart="@+id/spacer" />
+        android:layout_alignStart="@+id/spacer"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        />
 
     <TextView
         android:id="@+id/current_sound"
