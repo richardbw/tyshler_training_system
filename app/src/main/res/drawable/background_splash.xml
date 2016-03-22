@@ -9,14 +9,7 @@
             android:gravity="center"
             android:src="@drawable/ttslogo300x178"
             />
-            <!-- was: android:src="@mipmap/ic_launcher"/-->
     </item>
 
-    <!-- item>
-        <bitmap
-            android:gravity="bottom"
-            android:src="@drawable/tyshler_trans"
-            />
-    </item -->
 
 </layer-list>

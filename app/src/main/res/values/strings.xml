@@ -15,7 +15,7 @@
     <string name="tts_button_start">Start!...</string>
     <string name="tts_button_stop">Stop</string>
 
-    <string name="tts_pref_username">username</string>
+
     <!-- Example General settings -->
     <string name="pref_header_general">General</string>
 
@@ -25,18 +25,20 @@
     </string>
 
     <string name="pref_title_display_name">Display name</string>
-    <string name="pref_default_display_name">John Smith</string>
+    <string name="pref_default_display_name">Rodion Raskolnikov</string>
 
     <string name="pref_title_add_friends_to_messages">Add friends to messages</string>
-    <string-array name="pref_example_list_titles">
-        <item>Always</item>
-        <item>When possible</item>
-        <item>Never</item>
+    <string-array name="tts_pref_langnames">
+        <item>English</item>
+        <item>Español</item>
+        <item>Deutsch</item>
+        <item>Pу́сский</item>
     </string-array>
-    <string-array name="pref_example_list_values">
-        <item>1</item>
-        <item>0</item>
-        <item>-1</item>
+    <string-array name="tts_pref_langcodes">
+        <item>en</item>
+        <item>es</item>
+        <item>de</item>
+        <item>ru</item>
     </string-array>
 
     <!-- Example settings for Data & Sync -->

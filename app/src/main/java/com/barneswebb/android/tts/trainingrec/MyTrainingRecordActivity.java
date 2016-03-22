@@ -2,11 +2,13 @@ package com.barneswebb.android.tts.trainingrec;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.TextView;
 
 import com.barneswebb.android.tts.R;
 
@@ -16,6 +18,11 @@ public class MyTrainingRecordActivity extends AppCompatActivity implements Train
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mytrainingrecord);
+
+        ((TextView)findViewById(R.id.my_trainingheading)).setText( "Training record of " +
+                PreferenceManager.getDefaultSharedPreferences(MyTrainingRecordActivity.this).getString("username", "<not set>")
+                +":"
+        );
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {

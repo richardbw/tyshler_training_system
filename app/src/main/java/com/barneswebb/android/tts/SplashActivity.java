@@ -15,7 +15,7 @@ public class SplashActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Log.e("Spash", "==============> Starting MainActivity <===============");
+        Log.e("ttsSpash", "==============> Starting MainActivity <===============");
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
         finish();

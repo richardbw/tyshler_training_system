@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.AssetManager;
+import android.content.res.Resources;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.SystemClock;
@@ -21,6 +22,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -55,6 +57,8 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 public class MainActivity extends AppCompatActivity {
+
+    private static final String  TAG            = "ttsMain";
 
     private static final int TOTAL_NO_PROGRAMMES = 8;
     /**
@@ -337,7 +341,7 @@ public class MainActivity extends AppCompatActivity {
         private void saveExercise() {
 
             final Map<String, String> data = new HashMap<String, String>() {{
-                put(FIELD_NAMES[1], PreferenceManager.getDefaultSharedPreferences(getActivity()).getString(getString(R.string.tts_pref_username), "not_set")); //userName
+                put(FIELD_NAMES[1], PreferenceManager.getDefaultSharedPreferences(getActivity()).getString("username", "not_set")); //userName
                 put(FIELD_NAMES[2], ISO8601Format.format(new Date())); //excerzDate
                 put(FIELD_NAMES[3], chronometer.getText().toString()); //excerzDur
                 put(FIELD_NAMES[4], currentProg); //program
@@ -471,20 +475,24 @@ public class MainActivity extends AppCompatActivity {
 
 
     public static String readRawFile(String currentProg, Context context) {
-        InputStream is = context.getResources().openRawResource(context.getResources().getIdentifier(currentProg+"_index", "raw", context.getPackageName()));
+        String lang = PreferenceManager.getDefaultSharedPreferences(context).getString("lang", "en");//XXX default en
+        String resId = currentProg+"_"+lang+"_index";
+        Log.d(TAG, "Loading resource: " + resId);
         try
         { //ta: http://stackoverflow.com/a/16161277
+            InputStream is = context.getResources().openRawResource(context.getResources().getIdentifier(resId, "raw", context.getPackageName()));
             byte[] buffer = new byte[0];
             buffer = new byte[is.available()];
             while (is.read(buffer) != -1);
             return new String(buffer);
+        }
+        catch (Resources.NotFoundException e) {
+            Debug.bummer(e, context);
         }
         catch (IOException e) {
             Debug.bummer(e, context);
         }
         return "<err>";
     }
-
-
 
 }
