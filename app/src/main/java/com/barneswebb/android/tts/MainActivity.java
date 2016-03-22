@@ -471,10 +471,6 @@ public class MainActivity extends AppCompatActivity {
 
 
     public static String readRawFile(String currentProg, Context context) {
-        //return new Scanner(context.getResources().openRawResource(
-         //       context.getResources().getIdentifier(currentProg+"_index", "raw", context.getPackageName())
-        //   )
-        //).useDelimiter("\\z").next();
         InputStream is = context.getResources().openRawResource(context.getResources().getIdentifier(currentProg+"_index", "raw", context.getPackageName()));
         try
         { //ta: http://stackoverflow.com/a/16161277
