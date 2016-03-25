@@ -1,10 +1,15 @@
 package com.barneswebb.android.tts.beep;
 
+import android.app.Activity;
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioTrack;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+
+import com.barneswebb.android.tts.MainActivity;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
@@ -33,7 +38,7 @@ import java.util.regex.Pattern;
  * @author richard.barnes-webb
  *
  */
-public class BeepEngine extends AsyncTask<String, BeepEngine.Tone, Void> {
+public class BeepEngine extends AsyncTask<View, View, Void> {
 
     private static final String  TAG            = "ttsBeep";
 
@@ -41,17 +46,6 @@ public class BeepEngine extends AsyncTask<String, BeepEngine.Tone, Void> {
     private static Random        random         = new Random();
 
     private static final Pattern REPEAT_REGEX = Pattern.compile("^#Repeat:?\\s*([0-9]+)\\s+.*\\s*(seq|ran)*.*$",Pattern.CASE_INSENSITIVE);
-
-
-    @Override
-    protected Void doInBackground(String... params) {
-        try {
-            scheduleBeeps();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
 
     public  static enum  Repeat {SEQ,RAN,NONE;};
     public  static enum  Tone   {LO,HI,DBL,NONE;};
@@ -62,10 +56,33 @@ public class BeepEngine extends AsyncTask<String, BeepEngine.Tone, Void> {
         toneFreqMap.put(Tone.DBL,   800d);
     }
 
-
-    private ScheduledExecutorService scheduler      = Executors.newScheduledThreadPool(20);
+    private ScheduledExecutorService scheduler    ;
     private List<TimeSlice>          timesliceList;
     private List<ScheduledFuture<?>> scheduledBeeps = new ArrayList<ScheduledFuture<?>>();
+
+
+    @Override
+    protected Void doInBackground(View... views) {
+        try {
+            scheduleBeeps();
+            publishProgress(views);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
+    protected void onProgressUpdate(View... views) {
+        super.onProgressUpdate(views);
+        for (View view: views) {
+            Log.i(TAG, "onProgressUpdate(): " + String.valueOf(view));
+            if ((view instanceof Button) && ((Button)view).getTag().equals(MainActivity.BTN_SOUND_TAG))
+                ((Button)view).callOnClick();
+        }
+    }
+
+
 
     public BeepEngine(String beepConfigCsv) {
         try {
@@ -130,7 +147,16 @@ public class BeepEngine extends AsyncTask<String, BeepEngine.Tone, Void> {
     
 
     /* Plain java only
-    public static void generateTone(int hz, int msecs) {
+    public static class Log 
+    {
+        public static void e(String tag, String string) {
+           System.out.println( (new java.text.SimpleDateFormat("hh:mm:ss.SSS")).format(new java.util.Date())+ " LOG>"+tag+": "+string);
+        }
+        public static void d(String tag, String string) {
+            e(tag, string);
+        }
+    }
+    public static void tone(int hz, int msecs) {
 
         try {
             tone(hz, msecs, 1.0);
@@ -260,18 +286,7 @@ public class BeepEngine extends AsyncTask<String, BeepEngine.Tone, Void> {
         return content;
     }
 
-    
-    /* Plain java only
-    public static class Log 
-    {
-        public static void e(String tag, String string) {
-           System.out.println( (new java.text.SimpleDateFormat("hh:mm:ss.SSS")).format(new java.util.Date())+ " LOG>"+tag+": "+string);
-        }
-        public static void d(String tag, String string) {
-            e(tag, string);
-        }
-    }*/
-    
+ 
     public class TimeSlice {
         private long duration = 0;
         private Tone tone = Tone.NONE;

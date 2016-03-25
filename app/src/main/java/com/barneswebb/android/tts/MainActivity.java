@@ -1,7 +1,5 @@
 package com.barneswebb.android.tts;
 
-import static com.barneswebb.android.tts.trainingrec.ExerciseDataOpenHelper.*;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -15,7 +13,6 @@ import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentStatePagerAdapter;
@@ -23,7 +20,6 @@ import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -41,23 +37,15 @@ import com.barneswebb.android.tts.beep.BeepEngine;
 import com.barneswebb.android.tts.trainingrec.ExerciseDataOpenHelper;
 import com.barneswebb.android.tts.trainingrec.MyTrainingRecordActivity;
 
-import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Random;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
+
+import static com.barneswebb.android.tts.trainingrec.ExerciseDataOpenHelper.FIELD_NAMES;
+import static com.barneswebb.android.tts.trainingrec.ExerciseDataOpenHelper.ISO8601Format;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -73,7 +61,8 @@ public class MainActivity extends AppCompatActivity {
      * {@link FragmentStatePagerAdapter}.
      */
     private SectionsPagerAdapter mSectionsPagerAdapter;
-    private Map<String,List<String>> soundList = new HashMap<>();
+
+    public static final String BTN_SOUND_TAG = "HilaryPutnamIsDead";
 
     protected static ExerciseDataOpenHelper db;
     /**
@@ -103,47 +92,8 @@ public class MainActivity extends AppCompatActivity {
         tabLayout.setupWithViewPager(mCustomViewPager);
 
         db = new ExerciseDataOpenHelper(this);
-
-        /*FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });*/
-
-        //loadAssets();
     }
 
-    /** this method is now superflous, since i had to opt for reading from a zip file rather than assets */
-    private void loadAssets()
-    {
-        AssetManager assetMgr = getAssets();
-
-        try
-        {
-            String programmeList[] = assetMgr.list(getString(R.string.tts_setting_prog_dir));
-
-            for (String prog : programmeList) {
-                List<String> progSoundList = new ArrayList<>();
-                for (String sndFile: assetMgr.list(getString(R.string.tts_setting_prog_dir)+"/"+prog) ) {
-                    if ( ! sndFile.endsWith("index.html"))
-                        progSoundList.add(getString(R.string.tts_setting_prog_dir)+'/'+prog+'/'+sndFile);
-                }
-                Collections.sort(progSoundList); //sort, by default - fragment will randomize
-                soundList.put(prog, progSoundList);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-    public List<String> getSoundList(String progKey) {
-        return soundList.get(progKey);
-    }
-    public int getNoProgs() {
-        return soundList.keySet().size();
-    }
 
     void setPagingEnabled(boolean enabled){
         mCustomViewPager.setPagingEnabled(enabled);
@@ -188,6 +138,7 @@ public class MainActivity extends AppCompatActivity {
     public void onStop() {
         super.onStop();
     }
+
 
     // http://stackoverflow.com/questions/2257963/android-how-to-show-dialog-to-confirm-user-wishes-to-exit-activity
     public boolean confirmFinish() {
@@ -263,16 +214,14 @@ public class MainActivity extends AppCompatActivity {
          */
         private static final String ARG_SECTION_NUMBER = "section_number";
 
+
         MediaPlayer     player          = new MediaPlayer();
         AssetManager    fragAssetMgr    ;
         String currentProg;
-        List<String> progSoundList;
         Button soundButton;
         Chronometer chronometer;
         TextView currentSound;
         BeepEngine beepEngine;
-
-        final Random random = new Random();
 
         public ProgrammeFragment() {
         }
@@ -299,17 +248,14 @@ public class MainActivity extends AppCompatActivity {
             currentProg = getString(R.string.tts_setting_prog_pref) +zeroPaddedStr(getArguments().getInt(ARG_SECTION_NUMBER));
             fragAssetMgr = getActivity().getAssets();
             soundButton = (Button) rootView.findViewById(R.id.start_button);     //http://stackoverflow.com/a/18459352
+            soundButton.setTag(BTN_SOUND_TAG);
             chronometer = (Chronometer) rootView.findViewById(R.id.chronometer);
             currentSound  = (TextView) rootView.findViewById(R.id.current_sound);
 
-
-            final TextView currentSound = (TextView) rootView.findViewById(R.id.current_sound);
             final WebView excerciseText = (WebView) rootView.findViewById(R.id.excercise_text);
 
             excerciseText.getSettings().setJavaScriptEnabled(true);
             excerciseText.loadDataWithBaseURL("", getRawProgHtml(currentProg, getActivity()), "text/html", "UTF-8", ""); //http://stackoverflow.com/a/13741394
-
-            progSoundList = cacheFilesinSoundsZip();
 
             soundButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -321,15 +267,12 @@ public class MainActivity extends AppCompatActivity {
                         chronometer.setBase(SystemClock.elapsedRealtime());
                         chronometer.start();
                         beepEngine = new BeepEngine(readRawFile(currentProg+"_beep", getContext()));
-                        beepEngine.execute();
-                        //playSndFile(getRandomSoundFromList());
+                        beepEngine.execute(new View[]{soundButton, currentSound});
                     } else // STOP
                     {
                         ((MainActivity) getActivity()).setPagingEnabled(true);
                         chronometer.stop();
                         beepEngine.cancel();
-                        //player.reset();
-                        //player.release();
                         saveExercise();
                         soundButton.setText(getString(R.string.tts_button_start));
                     }
@@ -343,11 +286,6 @@ public class MainActivity extends AppCompatActivity {
             String lang = PreferenceManager.getDefaultSharedPreferences(context).getString("lang", "en");//XXX default en
             String resId = currentProg+"_"+lang+"_index";
             return readRawFile(resId, context);
-        }
-
-
-        private String getRandomSoundFromList() {
-            return progSoundList.get(random.nextInt(progSoundList.size()));
         }
 
         private void saveExercise()
@@ -384,60 +322,9 @@ public class MainActivity extends AppCompatActivity {
         //*********************************************************************************************
         //*********************************************************************************************
 
-
-        /** cache files, and return a list of the file names
-         * @thanks: http://stackoverflow.com/a/11615158 */
-        private List<String> cacheFilesinSoundsZip() {
-            currentSound.setText("Caching sounds...");
-            ArrayList<String> retList = new ArrayList<String>();
-            try {
-                ZipInputStream zipIs = new ZipInputStream(
-                        getActivity().getResources().openRawResource(
-                                getResources().getIdentifier(currentProg+"_sounds", "raw", getActivity().getPackageName())
-                        )
-                );
-                ZipEntry ze = null;
-
-                while ((ze = zipIs.getNextEntry()) != null) {
-                    retList.add(ze.getName());
-
-                    String cacheFileName = getActivity().getCacheDir() +"/"+ ze.getName();
-
-                    if ((new File(cacheFileName).exists())) continue;  //if it's already cached then ignore
-
-                    FileOutputStream fout = new FileOutputStream(cacheFileName);
-                    byte[] buffer = new byte[1024]; int length = 0;
-
-                    while ((length = zipIs.read(buffer))>0) {
-                        fout.write(buffer, 0, length);
-                    }
-                    zipIs .closeEntry();
-                    fout.close();
-                }
-                zipIs.close();
-            } catch (Exception e) {
-                Debug.bummer(e, getActivity());
-            }
-            currentSound.setText("");
-            return retList;
-        }
-
-
-
-        MediaPlayer.OnCompletionListener completionListener = new MediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer mp) {
-                mp.reset();
-                mp.release();
-                playSndFile(getRandomSoundFromList());
-            }
-        };
-
         void playSndFile(String sndFile){
             try {
-                currentSound.setText(sndFile);
                 player = new MediaPlayer();
-                player.setOnCompletionListener(completionListener);
                 player.setDataSource(new FileInputStream(getActivity().getCacheDir() +"/"+sndFile).getFD());
                 player.prepare();
                 player.start();
@@ -458,37 +345,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    /**
-     * http://stackoverflow.com/a/10043533
-     */
-    public static String readFile(String fileName, Context context) {
-        StringBuilder returnString = new StringBuilder();
-        InputStream fIn = null;
-        InputStreamReader isr = null;
-        BufferedReader input = null;
-        try {
-            fIn = context.getResources().getAssets().open(fileName, Context.MODE_WORLD_READABLE);
-            isr = new InputStreamReader(fIn);
-            input = new BufferedReader(isr);
-            String line = "";
-            while ((line = input.readLine()) != null) {
-                returnString.append(line);
-            }
-        } catch (Exception e) {
-            e.getMessage();
-        } finally {
-            try {
-                if (isr != null) isr.close();
-                if (fIn != null) fIn.close();
-                if (input != null) input.close();
-            } catch (Exception e2) {
-                e2.getMessage();
-            }
-        }
-        return returnString.toString();
-    }
-
-
     public static String readRawFile(String rawResId, Context context) {
         Log.d(TAG, "Loading raw resource - id: " + rawResId);
         try
@@ -499,10 +355,7 @@ public class MainActivity extends AppCompatActivity {
             while (is.read(buffer) != -1);
             return new String(buffer);
         }
-        catch (Resources.NotFoundException e) {
-            Debug.bummer(e, context);
-        }
-        catch (IOException e) {
+        catch (Resources.NotFoundException | IOException e) {
             Debug.bummer(e, context);
         }
         return "<err>";
