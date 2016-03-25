@@ -40,24 +40,24 @@ public class Debug
     public static void logGetters(Object obj) {
         dumpGetters(obj, true);
     }
-    
-    
+
+
     public static void dumpGetters(Object obj, boolean toLog)
     {
         if ( obj == null ) {
             out( tag +": NULL parameter; dumpGetters("+obj+")", toLog );
             return;
         }
-        out( tag + ": Getters for: "+ obj.getClass(), toLog);
-        
-        for (Method method: obj.getClass().getMethods() ) 
-            if ( method.getName().startsWith("get") && method.getParameterTypes().length == 0 ) 
-                try { System.out.println(String.format("  - %-30s:%s\t(%s)", 
-                            method.getName()+"()", method.invoke(obj, (new Object[]{})), method.getReturnType() ) ); } 
+        out(tag + ": Getters for: " + obj.getClass(), toLog);
+
+        for (Method method: obj.getClass().getMethods() )
+            if ( method.getName().startsWith("get") && method.getParameterTypes().length == 0 )
+                try { System.out.println(String.format("  - %-30s:%s\t(%s)",
+                            method.getName()+"()", method.invoke(obj, (new Object[]{})), method.getReturnType() ) ); }
                 catch (Exception e) { e.printStackTrace(); }
     }
-    
-    
+
+
     public static void out(String mesg, boolean toLog) {
         if ( toLog )
         {
@@ -65,27 +65,27 @@ public class Debug
         }
         else
         {
-            System.out.println( mesg );
+            System.out.println(mesg);
         }
-        
+
     }
-    
-    
-    
+
     public static void bummer(Exception e, Context c) {
-        String mesg = ( e.getMessage() != null )? e.getMessage() : "";
-        
+        bummer(( e.getMessage() != null )? e.getMessage() : "",
+                e,c);
+    }
+    public static void bummer(String m, Exception e, Context c) {
         String packagePref = Debug.class.getPackage().getName().substring(0, Debug.class.getPackage().getName().indexOf('.'));
         for ( StackTraceElement element : e.getStackTrace() )  {
             if (element.toString().startsWith(packagePref)) {
-                mesg += "\n  At:\n" + element;
+                m += "\n  At:\n" + element;
                 break;
             }}
-        dialog(e.getClass().getSimpleName(), mesg, c);
+        dialog(e.getClass().getSimpleName(), m, c);
         Log.e("Alert", "Exception!?:\n"+e.getMessage(), e);
         e.printStackTrace();
     }
-    
+
     public static void dialog(String t, String s, Context c) {
         (new AlertDialog.Builder(c))
             .setTitle(t)

@@ -3,6 +3,7 @@ package com.barneswebb.android.tts.beep;
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioTrack;
+import android.os.AsyncTask;
 import android.util.Log;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
@@ -12,18 +13,18 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.StringReader;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.Scanner;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 
 
 /**
@@ -32,35 +33,54 @@ import java.util.regex.Pattern;
  * @author richard.barnes-webb
  *
  */
-public class BeepEngine {
+public class BeepEngine extends AsyncTask<String, BeepEngine.Tone, Void> {
 
     private static final String  TAG            = "ttsBeep";
-    public static float          SAMPLE_RATE    = 8000f;
+
     public static int            TONE_LENGTH_MS = 100;
     private static Random        random         = new Random();
-    
-    private static final Pattern REPEAT_REGEX = Pattern.compile("^#Repeat:?\\s*([0-9]+)\\s+.*\\s*(seq|ran).*$",Pattern.CASE_INSENSITIVE);
-    public  static enum  Repeat {SEQ,RAN,NONE};
 
-    public  static enum  Tone   {LO,HI,DBL,NONE};
+    private static final Pattern REPEAT_REGEX = Pattern.compile("^#Repeat:?\\s*([0-9]+)\\s+.*\\s*(seq|ran)*.*$",Pattern.CASE_INSENSITIVE);
+
+
+    @Override
+    protected Void doInBackground(String... params) {
+        try {
+            scheduleBeeps();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public  static enum  Repeat {SEQ,RAN,NONE;};
+    public  static enum  Tone   {LO,HI,DBL,NONE;};
+    public  static Map<Tone, Double> toneFreqMap = new HashMap<Tone, Double>();
+    static {
+        toneFreqMap.put(Tone.LO,    400d);
+        toneFreqMap.put(Tone.HI,    1200d);
+        toneFreqMap.put(Tone.DBL,   800d);
+    }
+
 
     private ScheduledExecutorService scheduler      = Executors.newScheduledThreadPool(20);
     private List<TimeSlice>          timesliceList;
     private List<ScheduledFuture<?>> scheduledBeeps = new ArrayList<ScheduledFuture<?>>();
 
-
-    public BeepEngine(String csvFilename) {
+    public BeepEngine(String beepConfigCsv) {
         try {
-            timesliceList = readTimeSliceCsv(getTextFileContents(new File(csvFilename)));
+            timesliceList = readTimeSliceCsv(beepConfigCsv);
+            Log.d(TAG, "Loaded timesliceList, size:"+timesliceList.size());
         } catch (IOException e) {
             Log.e(TAG, "Can't parse csv: " + e.getMessage());
         }
-       
     }
     
-
-    private void scheduleBeeps() {
-
+    /** Create thread for each beep, and schedule for execution. <B>Starts straight away!</B> 
+     * This will block until all threads have completed.
+     * @throws InterruptedException */
+    public void scheduleBeeps() throws InterruptedException 
+    {
         scheduler = Executors.newScheduledThreadPool(scheduledBeeps.size());//create a thread for each timeslice
         long sumSinceStart = 0;
         scheduledBeeps.clear(); 
@@ -69,7 +89,11 @@ public class BeepEngine {
             Log.d(TAG, "scheduling: " + slice);
             scheduledBeeps.add(scheduler.schedule(createRunnable(slice), sumSinceStart , MILLISECONDS));
             sumSinceStart += slice.getDuration();
-        };
+        }
+        
+        scheduler.shutdown(); //execute only until prev submitted tasks are complete.
+        scheduler.awaitTermination(30, TimeUnit.MINUTES);  //wait until beeps are completed, or die automatically
+        Log.d(TAG, "** All the beeps have completed. **================>");
     }
 
     
@@ -79,30 +103,26 @@ public class BeepEngine {
         {
             @Override public void run() {
                 long startTime = System.currentTimeMillis();
-
-                //was: ThreadLocalRandom.current().current().nextLong(TONE_LENGTH_MS, slice.getDuration()-TONE_LENGTH_MS);
                 long startBeepLocation = (long)(random.nextDouble() * (slice.getDuration() - TONE_LENGTH_MS)); //@see http://stackoverflow.com/a/2546158
 
-                Log.d(TAG, (new SimpleDateFormat("hh:mm:ss.SSS")).format(new Date())+ "> start: {"+ slice.getDuration() +"  s:"+startBeepLocation+", t:"+slice.tone);
+                Log.d(TAG, "> start: {"+ slice.getDuration() +"  s:"+startBeepLocation+", t:"+slice.tone);
                 
-                if (slice.doIgnoreThisSlice) {
-                    System.out.println("  IGNORING");
-                    try {Thread.sleep(slice.getDuration());} catch (InterruptedException e) {e.printStackTrace();}
-                    System.out.println( (new SimpleDateFormat("hh:mm:ss.SSS")).format(new Date())+ "    end: "+ slice.getDuration()+"}"+(System.currentTimeMillis() - (startTime+slice.getDuration())));
-                    return;
+                if (getRandomBoolean(slice.ignoreProbability)) 
+                    Log.d(TAG, "    IGNORING this beep");
+                else
+                {
+                    try {Thread.sleep(startBeepLocation);} catch (InterruptedException e) {Log.e(TAG, e.getMessage());}
+                    Log.d(TAG, "beep: "+ slice.getTone());
+                    switch (slice.getTone()) {
+                        case HI:  highTone();   break;
+                        case LO:  lowTone();    break;
+                        case DBL: doubleTone(); break;
+                        default: break;
+                    }
                 }
                 
-                try {Thread.sleep(startBeepLocation);} catch (InterruptedException e) {Log.e(TAG, e.getMessage());}
-                switch (slice.getTone()) {
-                    case HI:  highTone();   break;
-                    case LO:  lowTone();    break;
-                    case DBL: doubleTone(); break;
-                    default: break;
-                }
-                
-                long endTime = System.currentTimeMillis() - (startTime+slice.getDuration()); 
-                Log.d(TAG, (new SimpleDateFormat("hh:mm:ss.SSS")).format(new Date())+ "    end: "+ slice.getDuration()+"} endTime: "+endTime);
-                
+                long endTimeDiff = System.currentTimeMillis() - (startTime+slice.getDuration());
+                Log.d(TAG, "/   end: "+ slice.getDuration()+"} endTime diff: "+endTimeDiff);
             }
         };
     }
@@ -118,7 +138,7 @@ public class BeepEngine {
             e.printStackTrace();
         }
     }
-
+    public static float          SAMPLE_RATE    = 8000f;
     public static void tone(int hz, int msecs, double vol) throws LineUnavailableException 
     {
       byte[] buf = new byte[1];
@@ -139,9 +159,7 @@ public class BeepEngine {
       sdl.drain();
       sdl.stop();
       sdl.close();
-    }
-    */
-
+    }    */
     /* Android only */
     //@thanks: https://gist.github.com/slightfoot/6330866
     private static AudioTrack generateTone(double freqHz, int durationMs)
@@ -153,26 +171,30 @@ public class BeepEngine {
             samples[i + 0] = sample;
             samples[i + 1] = sample;
         }
-        AudioTrack track = new AudioTrack(AudioManager.STREAM_MUSIC, 44100,
+        AudioTrack track = new AudioTrack(AudioManager.STREAM_ALARM, 44100,
                 AudioFormat.CHANNEL_OUT_STEREO, AudioFormat.ENCODING_PCM_16BIT,
                 count * (Short.SIZE / 8), AudioTrack.MODE_STATIC);
         track.write(samples, 0, count);
         return track;
-    }
-    //*/
+    }    //*/
 
     private static void highTone() 
     {
-        generateTone(1100, TONE_LENGTH_MS);
+        generateTone(toneFreqMap.get(Tone.HI),  TONE_LENGTH_MS).play();
     }
     private static void lowTone()  
     {
-        generateTone(400, TONE_LENGTH_MS);
+        generateTone(toneFreqMap.get(Tone.LO), TONE_LENGTH_MS).play();
     }
     private static void doubleTone()  
     {
-        generateTone(800,TONE_LENGTH_MS/2);
-        generateTone(800,TONE_LENGTH_MS/2);
+        generateTone(toneFreqMap.get(Tone.DBL), TONE_LENGTH_MS/2).play();
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        generateTone(toneFreqMap.get(Tone.DBL), TONE_LENGTH_MS / 2).play();
     }
 
     
@@ -212,21 +234,22 @@ public class BeepEngine {
 
 
 
-    private void shutdown() {
-
-        boolean mayInterruptIfRunning = true;
+    public void cancel() 
+    {
+        Log.d(TAG, "Cancelling beeps..");
         for (ScheduledFuture<?> future : scheduledBeeps) 
         {
             if (!(future.isCancelled() || future.isDone())) 
-                future.cancel(mayInterruptIfRunning);
+                future.cancel(true);//cancel - and interrupt if needed
         }
         
         if (!scheduler.isShutdown()) 
             scheduler.shutdown();
-        
-        
+
+        Log.d(TAG, "/shutdown beep scheduler.");
     }
-    
+
+    /** Not for Android.  eclipse prototyping only: */
     public static String getTextFileContents(File filename) {
         String content = null;
         try {
@@ -242,7 +265,7 @@ public class BeepEngine {
     public static class Log 
     {
         public static void e(String tag, String string) {
-           System.out.println("LOG>"+tag+": "+string);
+           System.out.println( (new java.text.SimpleDateFormat("hh:mm:ss.SSS")).format(new java.util.Date())+ " LOG>"+tag+": "+string);
         }
         public static void d(String tag, String string) {
             e(tag, string);
@@ -252,12 +275,12 @@ public class BeepEngine {
     public class TimeSlice {
         private long duration = 0;
         private Tone tone = Tone.NONE;
-        boolean doIgnoreThisSlice = false;
+        String ignoreProbability = "0";
 
         public TimeSlice(String durationS, String toneS, String randomIgnoreProb) {
             this.duration = Long.parseLong(durationS.trim());
             this.tone = (toneS.trim().length()==0)?Tone.NONE:Tone.valueOf(toneS.trim());
-            this.doIgnoreThisSlice = getRandomBoolean(randomIgnoreProb);
+            this.ignoreProbability = randomIgnoreProb.trim();
         }
 
         public long getDuration() {
@@ -269,9 +292,8 @@ public class BeepEngine {
 
         @Override
         public String toString() {
-
             return "TimeSlice [duration=" + duration + ", tone=" + tone
-                + ", doIgnoreThisSlice=" + doIgnoreThisSlice + "]";
+                + ", ignoreProbability=" + ignoreProbability + "]";
         }
     }
 
@@ -280,16 +302,21 @@ public class BeepEngine {
      */
     public static void main(String[] args) throws Exception
     {
-        System.out.println("Starting..");
+        if (args.length != 1) {
+            System.err.println("This program executes TTS sound csv files.");
+            System.err.println("Usage: "+BeepEngine.class.getSimpleName()+" (csv_file)");
+            System.exit(99);
+        }
         
-        BeepEngine thisApp = new BeepEngine("BeepEngine.csv");
+        //long killTime = 10_000;
+        //System.out.println("Starting.. (main() dies after "+killTime+"ms)");
+        
+        BeepEngine thisApp = new BeepEngine(getTextFileContents(new File(args[0])));
         thisApp.scheduleBeeps();
         
-        Thread.sleep(25_000);
-        
-        thisApp.shutdown();
+        //Thread.sleep(killTime);
+        //thisApp.cancel();
         
         System.out.println("Done.");
     }
 }
-

@@ -2,6 +2,7 @@ package com.barneswebb.android.tts;
 
 import static com.barneswebb.android.tts.trainingrec.ExerciseDataOpenHelper.*;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -14,6 +15,7 @@ import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentStatePagerAdapter;
@@ -35,6 +37,7 @@ import android.widget.Chronometer;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.barneswebb.android.tts.beep.BeepEngine;
 import com.barneswebb.android.tts.trainingrec.ExerciseDataOpenHelper;
 import com.barneswebb.android.tts.trainingrec.MyTrainingRecordActivity;
 
@@ -264,10 +267,10 @@ public class MainActivity extends AppCompatActivity {
         AssetManager    fragAssetMgr    ;
         String currentProg;
         List<String> progSoundList;
-        //Queue<String> playQueue;
         Button soundButton;
         Chronometer chronometer;
         TextView currentSound;
+        BeepEngine beepEngine;
 
         final Random random = new Random();
 
@@ -299,54 +302,62 @@ public class MainActivity extends AppCompatActivity {
             chronometer = (Chronometer) rootView.findViewById(R.id.chronometer);
             currentSound  = (TextView) rootView.findViewById(R.id.current_sound);
 
+
             final TextView currentSound = (TextView) rootView.findViewById(R.id.current_sound);
             final WebView excerciseText = (WebView) rootView.findViewById(R.id.excercise_text);
 
             excerciseText.getSettings().setJavaScriptEnabled(true);
-            excerciseText.loadDataWithBaseURL("", readRawFile(currentProg, getActivity()), "text/html", "UTF-8", ""); //http://stackoverflow.com/a/13741394
+            excerciseText.loadDataWithBaseURL("", getRawProgHtml(currentProg, getActivity()), "text/html", "UTF-8", ""); //http://stackoverflow.com/a/13741394
 
             progSoundList = cacheFilesinSoundsZip();
 
             soundButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (!soundButton.getText().equals(getString(R.string.tts_button_stop))) {
+                    if //START
+                            (!soundButton.getText().equals(getString(R.string.tts_button_stop))) {
                         ((MainActivity) getActivity()).setPagingEnabled(false);
                         soundButton.setText(getString(R.string.tts_button_stop));
                         chronometer.setBase(SystemClock.elapsedRealtime());
                         chronometer.start();
-
-                        playSndFile(getRandomSoundFromList());
+                        beepEngine = new BeepEngine(readRawFile(currentProg+"_beep", getContext()));
+                        beepEngine.execute();
+                        //playSndFile(getRandomSoundFromList());
                     } else // STOP
                     {
                         ((MainActivity) getActivity()).setPagingEnabled(true);
                         chronometer.stop();
-                        player.reset();
-                        player.release();
+                        beepEngine.cancel();
+                        //player.reset();
+                        //player.release();
                         saveExercise();
                         soundButton.setText(getString(R.string.tts_button_start));
                     }
-
                 }
-
             });
 
             return rootView;
         }
 
+        private String getRawProgHtml(String currentProg, Context context) {
+            String lang = PreferenceManager.getDefaultSharedPreferences(context).getString("lang", "en");//XXX default en
+            String resId = currentProg+"_"+lang+"_index";
+            return readRawFile(resId, context);
+        }
+
+
         private String getRandomSoundFromList() {
             return progSoundList.get(random.nextInt(progSoundList.size()));
         }
 
-        private void saveExercise() {
-
+        private void saveExercise()
+        {
             final Map<String, String> data = new HashMap<String, String>() {{
                 put(FIELD_NAMES[1], PreferenceManager.getDefaultSharedPreferences(getActivity()).getString("username", "not_set")); //userName
                 put(FIELD_NAMES[2], ISO8601Format.format(new Date())); //excerzDate
                 put(FIELD_NAMES[3], chronometer.getText().toString()); //excerzDur
                 put(FIELD_NAMES[4], currentProg); //program
             }};
-
 
             final EditText input = new EditText(getActivity());
             (new AlertDialog.Builder(getActivity()))
@@ -367,8 +378,12 @@ public class MainActivity extends AppCompatActivity {
                 })
                 .create()
             .show();
-
         }
+
+
+        //*********************************************************************************************
+        //*********************************************************************************************
+
 
         /** cache files, and return a list of the file names
          * @thanks: http://stackoverflow.com/a/11615158 */
@@ -474,13 +489,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    public static String readRawFile(String currentProg, Context context) {
-        String lang = PreferenceManager.getDefaultSharedPreferences(context).getString("lang", "en");//XXX default en
-        String resId = currentProg+"_"+lang+"_index";
-        Log.d(TAG, "Loading resource: " + resId);
+    public static String readRawFile(String rawResId, Context context) {
+        Log.d(TAG, "Loading raw resource - id: " + rawResId);
         try
         { //ta: http://stackoverflow.com/a/16161277
-            InputStream is = context.getResources().openRawResource(context.getResources().getIdentifier(resId, "raw", context.getPackageName()));
+            InputStream is = context.getResources().openRawResource(context.getResources().getIdentifier(rawResId, "raw", context.getPackageName()));
             byte[] buffer = new byte[0];
             buffer = new byte[is.available()];
             while (is.read(buffer) != -1);
