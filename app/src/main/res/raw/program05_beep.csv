@@ -1,0 +1,5 @@
+#Repeat:    3   Seq  
+#Duration(ms),  Beep,   RandomIgnore%:
+10000,           LO,     00
+10000,           HI,     00
+10000,           DBL,    00
