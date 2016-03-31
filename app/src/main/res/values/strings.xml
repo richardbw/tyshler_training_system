@@ -15,7 +15,7 @@
 
     <!-- Strings related to Settings -->
     <string name="title_activity_settings">Settings</string>
-    <string name="tts_release_version">1.0alpha</string>
+    <string name="tts_release_version">1.0alpha(b)</string>
     <string name="tts_setting_prog_dir">tts_files</string>
 
     <string name="pref_title_display_name">Display name</string>

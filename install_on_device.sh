@@ -7,6 +7,9 @@
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 BASE_DIR=`cd "${0%/*}/." && pwd`
 
+echo -n "BRANCH:"
+git branch | grep "^\*"
+
 APK="${BASE_DIR}/app/build/outputs/apk/app-debug.apk"
 
 [ ! -f "$APK" ] && $BASE_DIR/gradlew assembleDebug
