@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Tyshler Training System©</string>
+    <string name="app_name">Tyshler Training System ©</string>
 
     <string name="tts_setting_prog_pref">program</string>
     <string name="tts_setting_prog_disp_pref">P </string>
