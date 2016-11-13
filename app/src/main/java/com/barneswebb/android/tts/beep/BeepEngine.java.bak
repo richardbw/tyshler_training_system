@@ -1,10 +1,15 @@
 package com.barneswebb.android.tts.beep;
 
+import android.app.Activity;
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioTrack;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+
+import com.barneswebb.android.tts.MainActivity;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
@@ -33,7 +38,7 @@ import java.util.regex.Pattern;
  * @author richard.barnes-webb
  *
  */
-public class BeepEngine extends AsyncTask<String, BeepEngine.Tone, Void> {
+public class BeepEngine extends AsyncTask<View, View, Void> {
 
     private static final String  TAG            = "ttsBeep";
 
@@ -56,23 +61,7 @@ public class BeepEngine extends AsyncTask<String, BeepEngine.Tone, Void> {
     private List<ScheduledFuture<?>> scheduledBeeps = new ArrayList<ScheduledFuture<?>>();
 
 
-    @Override
-    protected Void doInBackground(String... params) {
-        try {
-            scheduleBeeps();
-            publishProgress();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    @Override
-    protected void onProgressUpdate(BeepEngine.Tone... values) {
-        super.onProgressUpdate(values);
-        Log.i(TAG, "onProgressUpdate(): " + String.valueOf(values[0]));
-    }
-
+    
 
 
     public BeepEngine(String beepConfigCsv) {
@@ -147,6 +136,7 @@ public class BeepEngine extends AsyncTask<String, BeepEngine.Tone, Void> {
             e(tag, string);
         }
     }
+
     public static void tone(int hz, int msecs) {
 
         try {
@@ -176,8 +166,41 @@ public class BeepEngine extends AsyncTask<String, BeepEngine.Tone, Void> {
       sdl.drain();
       sdl.stop();
       sdl.close();
-    }    */
+    }    
+
+    private interface PlayTone {
+        void play();
+    }
+    private static PlayTone generateTone(final double freq, final int dur)
+    {
+        return new PlayTone() {
+            @Override public void play() {
+                tone((int)freq, dur);
+            }
+        };
+    }  */
     /* Android only */
+@Override
+    protected Void doInBackground(View... views) {
+        try {
+            scheduleBeeps();
+            publishProgress(views);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
+    protected void onProgressUpdate(View... views) {
+        super.onProgressUpdate(views);
+        for (View view: views) {
+            Log.i(TAG, "onProgressUpdate(): " + String.valueOf(view));
+            if ((view instanceof Button) && ((Button)view).getTag().equals(MainActivity.BTN_SOUND_TAG))
+                ((Button)view).callOnClick();
+        }
+    }
+
     //@thanks: https://gist.github.com/slightfoot/6330866
     private static AudioTrack generateTone(double freqHz, int durationMs)
     {
@@ -277,8 +300,7 @@ public class BeepEngine extends AsyncTask<String, BeepEngine.Tone, Void> {
         return content;
     }
 
-    
-
+ 
     public class TimeSlice {
         private long duration = 0;
         private Tone tone = Tone.NONE;

@@ -12,9 +12,20 @@
 bin/
 gen/
 
+#RBW - intelliJ:
+.idea/gradle.xml
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/dictionaries
+.idea/vcs.xml
+.idea/jsLibraryMappings.xm
+
+projectFilesBackup
+
 # Gradle files
 .gradle/
 build/
+/*/build/
 
 # Local configuration file (sdk path, etc)
 local.properties

@@ -61,26 +61,6 @@ public class BeepEngine extends AsyncTask<View, View, Void> {
     private List<ScheduledFuture<?>> scheduledBeeps = new ArrayList<ScheduledFuture<?>>();
 
 
-    @Override
-    protected Void doInBackground(View... views) {
-        try {
-            scheduleBeeps();
-            publishProgress(views);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    @Override
-    protected void onProgressUpdate(View... views) {
-        super.onProgressUpdate(views);
-        for (View view: views) {
-            Log.i(TAG, "onProgressUpdate(): " + String.valueOf(view));
-            if ((view instanceof Button) && ((Button)view).getTag().equals(MainActivity.BTN_SOUND_TAG))
-                ((Button)view).callOnClick();
-        }
-    }
 
 
 
@@ -156,6 +136,7 @@ public class BeepEngine extends AsyncTask<View, View, Void> {
             e(tag, string);
         }
     }
+
     public static void tone(int hz, int msecs) {
 
         try {
@@ -185,7 +166,19 @@ public class BeepEngine extends AsyncTask<View, View, Void> {
       sdl.drain();
       sdl.stop();
       sdl.close();
-    }    */
+    }    
+
+    private interface PlayTone {
+        void play();
+    }
+    private static PlayTone generateTone(final double freq, final int dur)
+    {
+        return new PlayTone() {
+            @Override public void play() {
+                tone((int)freq, dur);
+            }
+        };
+    }  */
     /* Android only */
     //@thanks: https://gist.github.com/slightfoot/6330866
     private static AudioTrack generateTone(double freqHz, int durationMs)
@@ -202,7 +195,29 @@ public class BeepEngine extends AsyncTask<View, View, Void> {
                 count * (Short.SIZE / 8), AudioTrack.MODE_STATIC);
         track.write(samples, 0, count);
         return track;
-    }    //*/
+    }    
+
+    @Override
+    protected Void doInBackground(View... views) {
+        try {
+            scheduleBeeps();
+            publishProgress(views);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
+    protected void onProgressUpdate(View... views) {
+        super.onProgressUpdate(views);
+        for (View view: views) {
+            Log.i(TAG, "onProgressUpdate(): " + String.valueOf(view));
+            if ((view instanceof Button) && ((Button)view).getTag().equals(MainActivity.BTN_SOUND_TAG))
+                ((Button)view).callOnClick();
+        }
+    }
+//*/
 
     private static void highTone() 
     {

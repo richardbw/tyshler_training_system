@@ -34,6 +34,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.barneswebb.android.tts.beep.BeepEngine;
+import com.barneswebb.android.tts.trainingrec.AndroidDatabaseManager;
 import com.barneswebb.android.tts.trainingrec.ExerciseDataOpenHelper;
 import com.barneswebb.android.tts.trainingrec.MyTrainingRecordActivity;
 
@@ -118,9 +119,12 @@ public class MainActivity extends AppCompatActivity {
             case R.id.action_trainingrecord:
                 startActivity(new Intent(this, MyTrainingRecordActivity.class));
                 break;
-            case R.id.action_settings:
-                startActivityForResult(new Intent(this, SettingsActivity.class), 1);
+            case R.id.action_dbedit:
+                startActivityForResult(new Intent(this, AndroidDatabaseManager.class), 1);
                 break;
+            /** case R.id.action_settings:
+                startActivityForResult(new Intent(this, SettingsActivity.class), 1);
+                break; */
             case R.id.action_about:
                 aboutDlg();
                 break;
