@@ -284,7 +284,7 @@ public class BeepEngine extends AsyncTask<View, View, Void> {
                 future.cancel(true);//cancel - and interrupt if needed
         }
         
-        if (!scheduler.isShutdown()) 
+        if ((scheduler!=null) && !scheduler.isShutdown())
             scheduler.shutdown();
 
         Log.d(TAG, "/shutdown beep scheduler.");
