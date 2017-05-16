@@ -45,9 +45,7 @@
             android:configChanges="orientation"
             android:screenOrientation="portrait"
             />
-        <activity
-            android:name=".trainingrec.AndroidDatabaseManager"
-            android:theme="@style/Theme.AppCompat.Light" />
+        <!--DELME activity android:name=".trainingrec.MyTrainingRecordActivity"></activity -->
     </application>
 
 </manifest>

@@ -4,13 +4,12 @@
     <string name="tts_setting_prog_pref">program</string>
     <string name="tts_setting_prog_disp_pref">P </string>
 
-    <string name="tts_button_start">Start!…</string>
+    <string name="tts_button_start">Start!...</string>
     <string name="tts_button_stop">Stop</string>
 
     <!-- Menu titles -->
-    <string name="action_trainingrecord">My training record…</string>
+    <string name="action_trainingrecord">My training record...</string>
     <string name="action_settings">Settings...</string>
-    <string name="action_dbedit">DB Edit…</string>
     <string name="action_about">About</string>
 
 
@@ -37,6 +36,5 @@
     </string-array>
 
     <string name="title_activity_training_record">My Training Record</string>
-
 
 </resources>

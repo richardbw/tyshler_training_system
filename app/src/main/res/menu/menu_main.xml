@@ -7,15 +7,10 @@
         android:orderInCategory="100"
         android:title="@string/action_trainingrecord"
         app:showAsAction="never" />
-    <!-- item
+    <item
         android:id="@+id/action_settings"
         android:orderInCategory="100"
         android:title="@string/action_settings"
-        app:showAsAction="never" /-->
-    <item
-        android:id="@+id/action_dbedit"
-        android:orderInCategory="100"
-        android:title="@string/action_dbedit"
         app:showAsAction="never" />
     <item
         android:id="@+id/action_about"

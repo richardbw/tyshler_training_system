@@ -4,6 +4,19 @@
 
 # Files for the Dalvik VM
 *.dex
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
 
 # Java class files
 *.class
@@ -12,36 +25,9 @@
 bin/
 gen/
 
-#RBW - intelliJ:
-.idea/gradle.xml
-.idea/workspace.xml
-.idea/tasks.xml
-.idea/dictionaries
-.idea/vcs.xml
-.idea/jsLibraryMappings.xml
-
-# Sensitive or high-churn files:
-.idea/dataSources.ids
-.idea/dataSources.xml
-.idea/dataSources.local.xml
-.idea/sqlDataSources.xml
-.idea/dynamic.xml
-.idea/uiDesigner.xml
-
-# Gradle:
-.idea/gradle.xml
-.idea/libraries
-
-# Mongo Explorer plugin:
-.idea/mongoSettings.xml
-
-
-projectFilesBackup
-
 # Gradle files
 .gradle/
 build/
-/*/build/
 
 # Local configuration file (sdk path, etc)
 local.properties

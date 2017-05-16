@@ -2,7 +2,7 @@
 <LinearLayout  xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="wrap_content"
-    android:layout_height="wrap_content">
+    android:layout_height="match_parent">
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="wrap_content"
@@ -10,7 +10,6 @@
         android:orientation="horizontal">
 
         <TextView
-            android:text="99"
             android:id="@+id/training_rec_id"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -23,13 +22,11 @@
             android:layout_height="wrap_content">
 
             <TextView
-                android:text="9999-99-99 99:99:99"
                 android:id="@+id/training_rec_date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?attr/textAppearanceListItem" />
             <TextView
-                android:text="99.999"
                 android:id="@+id/training_rec_duration"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -45,12 +42,12 @@
     </LinearLayout>
 
     <TextView
-        android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
         android:id="@+id/training_rec_comment"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:layout_marginBottom="@dimen/text_margin"
+        android:text="Medium Text"
         />
 
 </LinearLayout>
