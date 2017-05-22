@@ -165,9 +165,9 @@ public class MainActivity extends AppCompatActivity {
             case R.id.action_trainingrecord:
                 startActivity(new Intent(this, MyTrainingRecordActivity.class));
                 break;
-            case R.id.action_settings:
-                startActivityForResult(new Intent(this, SettingsActivity.class), 1);
-                break;
+            //case R.id.action_settings:   COMMENTED OUT FOR RELEASE //rbw20170519
+            //    startActivityForResult(new Intent(this, SettingsActivity.class), 1);
+            //   break;
             case R.id.action_about:
                 aboutDlg();
                 break;

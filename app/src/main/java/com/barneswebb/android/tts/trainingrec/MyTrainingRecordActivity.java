@@ -18,8 +18,9 @@ public class MyTrainingRecordActivity extends AppCompatActivity implements Train
         setContentView(R.layout.activity_mytrainingrecord);
 
         MyTrainingRecordActivity.this.setTitle(
-                PreferenceManager.getDefaultSharedPreferences(MyTrainingRecordActivity.this).getString("username", "<not set>")
-                        + "'s Training Record"
+                "My Training Record"
+                //COMMENTED OUT FOR RELEASE //rbw20170519PreferenceManager.getDefaultSharedPreferences(MyTrainingRecordActivity.this).getString("username", "<not set>")
+                //        + "'s Training Record"
         );
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
