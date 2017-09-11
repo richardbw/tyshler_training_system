@@ -101,19 +101,9 @@ public class MainActivity extends AppCompatActivity {
 
         db = new ExerciseDataOpenHelper(this);
 
-        /*FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });*/
-
-        //loadAssets();
     }
 
-    /** this method is now superflous, since i had to opt for reading from a zip file rather than assets */
+    /** this method is now superfluous, since i had to opt for reading from a zip file rather than assets */
     private void loadAssets()
     {
         AssetManager assetMgr = getAssets();
@@ -155,24 +145,19 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        switch (id) {
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        switch (item.getItemId()) {
             case R.id.action_trainingrecord:
                 startActivity(new Intent(this, MyTrainingRecordActivity.class));
                 break;
-            //case R.id.action_settings:   COMMENTED OUT FOR RELEASE //rbw20170519
-            //    startActivityForResult(new Intent(this, SettingsActivity.class), 1);
-            //   break;
+            case R.id.action_settings:
+                startActivityForResult(new Intent(this, SettingsActivity.class), 1);
+                break;
             case R.id.action_about:
                 aboutDlg();
                 break;
         }
-
         return super.onOptionsItemSelected(item);
     }
 

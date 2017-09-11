@@ -1,22 +1,42 @@
 package com.barneswebb.android.tts.trainingrec;
 
+
+import java.lang.reflect.Field;
+
 /**
  * Created by richard.barnes-webb on 2015/12/23.
  */
 public class ExerciseSession {
     final int    id;
     final String userName;
-    final String excerzDate;
-    final String excerzDur;
+    final String excercise_date;
+    final String duration;
     final String program;
     final String comments;
 
     public ExerciseSession(int id, String userName, String excerzDate, String excerzDur, String program, String comments) {
         this.id = id;
-        this.userName=   userName;
-        this.excerzDate= excerzDate;
-        this.excerzDur=  excerzDur;
-        this.program=    program;
-        this.comments=   comments;           
+        this.userName=          userName;
+        this.excercise_date=    excerzDate;
+        this.duration=          excerzDur;
+        this.program=           program;
+        this.comments=          comments;
     }
+
+    public String toCsvRecord() {
+        return
+                //TODO: "\""+ userName          +"\","+
+                "\""+ excercise_date    +"\","+
+                "\""+ duration          +"\","+
+                "\""+ program           +"\","+
+                "\""+ comments          +"\",";
+    }
+
+    public static String csvHeaders() {
+        StringBuffer sb = new StringBuffer() ;
+        for (Field field : ExerciseSession.class.getClass().getFields())
+            sb.append('"'+field.getName().replace('_', ' ')+"\",");
+        return sb.toString();
+    }
+
 }

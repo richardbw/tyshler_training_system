@@ -9,17 +9,6 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".trainingrec.MyTrainingRecordActivity">
 
-    <!-- TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="My Training Record:"
-        android:id="@+id/my_trainingheading"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/my_trainingheading"
-        / -->
-
     <fragment
         android:id="@+id/training_fragment"
         android:name="com.barneswebb.android.tts.trainingrec.TrainingFragment"
@@ -35,6 +24,17 @@
         android:src="@android:drawable/ic_input_delete"
         android:layout_marginLeft="@dimen/fab_margin"
         android:layout_marginRight="@dimen/fab_margin"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab_email"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|bottom"
+        android:src="@android:drawable/ic_dialog_email"
+        android:layout_marginLeft="@dimen/fab2_margin"
+        android:layout_marginRight="@dimen/fab2_margin"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true" />
 

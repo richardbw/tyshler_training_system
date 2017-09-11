@@ -20,18 +20,14 @@ import com.barneswebb.android.tts.R;
  */
 public class TrainingFragment extends Fragment {
 
-    // TODO: Customize parameter argument names
     private static final String ARG_COLUMN_COUNT = "column-count";
-    // TODO: Customize parameters
     private int mColumnCount = 1;
     private OnListFragmentInteractionListener mListener;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
-     */
-    public TrainingFragment() {
-    }
+     */public TrainingFragment() {}
 
     // TODO: Customize parameter initialization
     @SuppressWarnings("unused")
@@ -66,8 +62,7 @@ public class TrainingFragment extends Fragment {
             } else {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
-            ExerciseDataOpenHelper db = new ExerciseDataOpenHelper(getActivity());
-            recyclerView.setAdapter(new MyTrainingRecyclerViewAdapter(db.getExerciseRowData(), mListener));
+            recyclerView.setAdapter(new MyTrainingRecyclerViewAdapter(new ExerciseDataOpenHelper(getActivity()).getExerciseRowData(), mListener));
         }
         return view;
     }
@@ -79,8 +74,7 @@ public class TrainingFragment extends Fragment {
         if (context instanceof OnListFragmentInteractionListener) {
             mListener = (OnListFragmentInteractionListener) context;
         } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnListFragmentInteractionListener");
+            throw new RuntimeException(context.toString() + " must implement OnListFragmentInteractionListener");
         }
     }
 

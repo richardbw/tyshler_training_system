@@ -7,11 +7,11 @@
         android:orderInCategory="100"
         android:title="@string/action_trainingrecord"
         app:showAsAction="never" />
-    <!-- item   COMMENTED OUT FOR RELEASE //rbw20170519
+    <item
         android:id="@+id/action_settings"
         android:orderInCategory="100"
         android:title="@string/action_settings"
-        app:showAsAction="never" / -->
+        app:showAsAction="never"/>
     <item
         android:id="@+id/action_about"
         android:orderInCategory="100"

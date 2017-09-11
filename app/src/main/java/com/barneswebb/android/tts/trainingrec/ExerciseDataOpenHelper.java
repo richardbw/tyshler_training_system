@@ -25,20 +25,14 @@ import com.barneswebb.android.tts.Debug;
 public class ExerciseDataOpenHelper extends SQLiteOpenHelper
 {
 
-    private static final String tag                 = ExerciseDataOpenHelper.class.getPackage().getName() + "]"
-                                                    + ExerciseDataOpenHelper.class.getSimpleName();
-    private static final int    DATABASE_VERSION    = 1;
+    private static final String tag = ExerciseDataOpenHelper.class.getPackage().getName() + "]" + ExerciseDataOpenHelper.class.getSimpleName();
+    private static final int DATABASE_VERSION = 1;
     private static final String TRAININGHISTORY_TABLE_NAME = "myTrainingHistory";
-    Context                     context;
-    public static final String[] FIELD_NAMES            = new String[]{"id", "userName", "excerzDate", "excerzDur", "program", "comments"};
-    private static final String PRIMARY_KEY              = FIELD_NAMES[0];
+    Context context;
+    public static final String[] FIELD_NAMES = new String[]{"id", "userName", "excerzDate", "excerzDur", "program", "comments"};
+    private static final String PRIMARY_KEY = FIELD_NAMES[0];
 
     public static final SimpleDateFormat ISO8601Format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
-    static final Map<String, String> map = new HashMap<String, String>() {{
-            put("foo", "bar");
-            put("x", "y");
-    }};
 
 
     public ExerciseDataOpenHelper(Context context)

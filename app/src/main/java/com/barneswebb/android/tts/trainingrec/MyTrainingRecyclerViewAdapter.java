@@ -15,7 +15,6 @@ import java.util.List;
 /**
  * {@link RecyclerView.Adapter} that can display a {@link TrainingItem} and makes a call to the
  * specified {@link OnListFragmentInteractionListener}.
- * TODO: Replace the implementation with code for your data type.
  */
 public class MyTrainingRecyclerViewAdapter extends RecyclerView.Adapter<MyTrainingRecyclerViewAdapter.ViewHolder> {
 
@@ -36,11 +35,11 @@ public class MyTrainingRecyclerViewAdapter extends RecyclerView.Adapter<MyTraini
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.exerciseSession = exerciseList.get(position);
-        holder.mIdView.setText(exerciseList.get(position).id+"");
-        holder.mDateView.setText(       "Date: "+       exerciseList.get(position).excerzDate);
-        holder.mDurationView.setText(   "Duration: " +  exerciseList.get(position).excerzDur);
+        holder.mIdView.setText(         exerciseList.get(position).id+"");
+        holder.mDateView.setText(       "Date: "+       exerciseList.get(position).excercise_date);
+        holder.mDurationView.setText(   "Duration: " +  exerciseList.get(position).duration);
         holder.mCompltExView.setText(   "Programme: " + exerciseList.get(position).program);
-        holder.mCommentView.setText(exerciseList.get(position).comments);
+        holder.mCommentView.setText(    exerciseList.get(position).comments);
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override

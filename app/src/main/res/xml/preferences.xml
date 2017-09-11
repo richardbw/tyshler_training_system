@@ -10,8 +10,19 @@
         android:selectAllOnFocus="true"
         android:singleLine="true"
         android:title="@string/pref_title_display_name"
-        android:summary="Used in training record"
+        android:summary="Used in saving records, and emailing subject."
         />
+
+    <EditTextPreference
+        android:capitalize="words"
+        android:defaultValue="@string/pref_default_display_name"
+        android:inputType="textEmailAddress"
+        android:key="email_dest"
+        android:maxLines="1"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:summary="The email recipient for sending your training records to, such as your coach."
+        android:title="@string/pref_title_email_dest" />
 
     <ListPreference
         android:title="Language preference"
