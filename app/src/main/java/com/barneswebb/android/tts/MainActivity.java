@@ -195,7 +195,7 @@ public class MainActivity extends AppCompatActivity {
         new AlertDialog.Builder(this)
                 .setIcon(R.drawable.tyshler_0x3f51b5)
                 .setTitle("About")
-                .setMessage("(c) 2016 FencingMultimedia.com\n\nDevelopment:\nRichard@Barnes-Webb.com\n"+verString+"\nAndroid API ver: "+android.os.Build.VERSION.SDK_INT)
+                .setMessage("(c) 2017 FencingMultimedia.com\n\nDevelopment:\nRichard@Barnes-Webb.com\n"+verString+"\nAndroid API ver: "+android.os.Build.VERSION.SDK_INT)
                 .setNeutralButton("Okay", new DialogInterface.OnClickListener() {
                     @Override public void onClick(DialogInterface dialog, int which)  { dialog.dismiss();  } })
                 .show();

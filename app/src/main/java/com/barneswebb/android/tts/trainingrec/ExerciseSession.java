@@ -1,11 +1,9 @@
 package com.barneswebb.android.tts.trainingrec;
 
-
-import java.lang.reflect.Field;
-
 /**
  * Created by richard.barnes-webb on 2015/12/23.
  */
+
 public class ExerciseSession {
     final int    id;
     final String userName;
@@ -33,10 +31,12 @@ public class ExerciseSession {
     }
 
     public static String csvHeaders() {
-        StringBuffer sb = new StringBuffer() ;
-        for (Field field : ExerciseSession.class.getClass().getFields())
-            sb.append('"'+field.getName().replace('_', ' ')+"\",");
-        return sb.toString();
+        return
+                //TODO: "\""+ userName          +"\","+
+                "\"Exercise date    \","+
+                "\"Duration          \","+
+                "\"Program           \","+
+                "\"Comments          \",";
     }
 
 }
