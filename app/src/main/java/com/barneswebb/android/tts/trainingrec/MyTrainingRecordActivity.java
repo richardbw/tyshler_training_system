@@ -1,18 +1,17 @@
 package com.barneswebb.android.tts.trainingrec;
 
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Handler;
-import android.os.Message;
 import android.preference.PreferenceManager;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import com.barneswebb.android.tts.Debug;
 import com.barneswebb.android.tts.R;
@@ -23,6 +22,7 @@ import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Objects;
 
 public class MyTrainingRecordActivity extends AppCompatActivity implements TrainingFragment.OnListFragmentInteractionListener  {
     private static final String  TAG            = "ttsMyTrainingRecord";
@@ -35,13 +35,13 @@ public class MyTrainingRecordActivity extends AppCompatActivity implements Train
                 PreferenceManager.getDefaultSharedPreferences(MyTrainingRecordActivity.this).getString("username", "<not set>") + "'s Training Record"
         );
 
-        findViewById(R.id.fab).setOnClickListener(new View.OnClickListener() {
+        Objects.requireNonNull(findViewById(R.id.fab)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 new AlertDialog.Builder(MyTrainingRecordActivity.this)
                         .setIcon(android.R.drawable.ic_dialog_alert)
                         .setTitle("Delete Record")
-                        .setMessage("Please confirm that you want to delete all exercise records?\n" +
+                        .setMessage("Please confirm that you want to delete ALL exercise records?\n" +
                                 "(Cannot be undone)")
                         .setPositiveButton("Delete", new DialogInterface.OnClickListener() {
                             @Override public void onClick(DialogInterface dialog, int which)  {
@@ -53,7 +53,7 @@ public class MyTrainingRecordActivity extends AppCompatActivity implements Train
 
             }
         });
-        findViewById(R.id.fab_email).setOnClickListener(new View.OnClickListener()
+        Objects.requireNonNull(findViewById(R.id.fab_email)).setOnClickListener(new View.OnClickListener()
         {
             @Override public void onClick(View view) {
 
@@ -73,13 +73,15 @@ public class MyTrainingRecordActivity extends AppCompatActivity implements Train
                                 {
                                     final Intent emailIntent = new Intent(android.content.Intent.ACTION_SEND);
                                     emailIntent.setType("plain/text");
+                                    emailIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION); // https://stackoverflow.com/a/38858040
                                     emailIntent.putExtra(Intent.EXTRA_EMAIL,    new String[] { email_dest });
                                     emailIntent.putExtra(Intent.EXTRA_SUBJECT,  email_subject);
                                     emailIntent.putExtra(Intent.EXTRA_TEXT,     email_body);
-                                    emailIntent.putExtra(Intent.EXTRA_STREAM,   getTrainingRecords(username));
+                                    emailIntent.putExtra(Intent.EXTRA_STREAM,   writeTrainingRecords(username));
                                     MyTrainingRecordActivity.this.startActivity(Intent.createChooser(emailIntent, "Sending email..."));
 
                                     MyTrainingRecordActivity.this.finish();
+                                    Toast.makeText(getApplicationContext(), "Handing off to external app..", Toast.LENGTH_SHORT).show();
                                 } })
                             .setNegativeButton("Cancel", null)
                             .show();
@@ -89,24 +91,31 @@ public class MyTrainingRecordActivity extends AppCompatActivity implements Train
 
     }
 
+    /** Checks if external storage is available for read and write
+     * see https://developer.android.com/training/data-storage/files#CheckExternalAvail
+     */
     public boolean isExternalStorageWritable() {
         return (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState()));
     }
 
-    private Uri getTrainingRecords(String username)
+    private Uri writeTrainingRecords(String username)
     {
-        final Uri csvUri= Uri.parse("file://" + Environment.getExternalStorageDirectory()+"/tts-"+username+"-"+new SimpleDateFormat("yyyy-MM-dd'T'hh_mm_ss").format(new Date())+".csv");
-        Log.d(TAG, "Will write to: "+csvUri);
+
+        final File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS), "/tts-"+username+"-"+new SimpleDateFormat("yyyy-MM-dd'T'hh_mm_ss").format(new Date())+".csv");
+
+        Log.d(TAG, "Will write to: "+file.getAbsolutePath());
         try {
-            PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(csvUri.getPath())));
+            PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(file)));
             out.println(ExerciseSession.csvHeaders());
-            for (ExerciseSession session: new ExerciseDataOpenHelper(MyTrainingRecordActivity.this).getExerciseRowData() ) out.println(session.toCsvRecord());
+            for (ExerciseSession session: new ExerciseDataOpenHelper(MyTrainingRecordActivity.this).getExerciseRowData() ) out.println(session.toCsvRecord()); //TODO get records based on username
             out.close();
         } catch (Exception e) {
             e.printStackTrace();
             Debug.bummer(e, MyTrainingRecordActivity.this);
         }
 
+        Uri csvUri = FileProvider.getUriForFile(this, this.getPackageName()+".trainingrec", file);
+        Log.d(TAG, "CSV Uri: "+csvUri);
         return csvUri;
     }
 

@@ -3,19 +3,19 @@
 
     <EditTextPreference
         android:capitalize="words"
-        android:defaultValue="@string/pref_default_display_name"
+        android:defaultValue="Charles d'Artagnan"
         android:inputType="textCapWords"
         android:key="username"
         android:maxLines="1"
         android:selectAllOnFocus="true"
         android:singleLine="true"
         android:title="@string/pref_title_display_name"
-        android:summary="Used in saving records, and emailing subject."
+        android:summary="Used in Training records, and emailing subject."
         />
 
     <EditTextPreference
         android:capitalize="words"
-        android:defaultValue="@string/pref_default_display_name"
+        android:defaultValue="not_set_in_settings@example.com"
         android:inputType="textEmailAddress"
         android:key="email_dest"
         android:maxLines="1"
@@ -24,12 +24,12 @@
         android:summary="The email recipient for sending your training records to, such as your coach."
         android:title="@string/pref_title_email_dest" />
 
-    <ListPreference
+    <!-- ListPreference
         android:title="Language preference"
         android:summary="Select exercise display language"
         android:key="lang"
         android:defaultValue="en"
         android:entries="@array/tts_pref_langnames"
-        android:entryValues="@array/tts_pref_langcodes" />
+        android:entryValues="@array/tts_pref_langcodes" / -->
 
 </PreferenceScreen>

@@ -6,7 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 /**
- * @thanks: https://www.bignerdranch.com/blog/splash-screens-the-right-way/
+ * thanks: https://www.bignerdranch.com/blog/splash-screens-the-right-way/
  */
 
 public class SplashActivity extends AppCompatActivity {

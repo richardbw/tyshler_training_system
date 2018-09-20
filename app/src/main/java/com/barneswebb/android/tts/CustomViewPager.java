@@ -7,7 +7,7 @@ import android.view.MotionEvent;
 
 /**
  * Created by richard.barnes-webb on 2015/12/21.
- * @thanks: https://www.shiftedup.com/2011/08/29/disabling-pagingswiping-on-android
+ * thanks: https://www.shiftedup.com/2011/08/29/disabling-pagingswiping-on-android
  */
 public class CustomViewPager extends ViewPager {
 
@@ -20,12 +20,12 @@ public class CustomViewPager extends ViewPager {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        return (this.enabled)? super.onTouchEvent(event):false;
+        return (this.enabled) && super.onTouchEvent(event);
     }
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent event) {
-        return (this.enabled)? super.onInterceptTouchEvent(event):false;
+        return (this.enabled) && super.onInterceptTouchEvent(event);
     }
 
     public void setPagingEnabled(boolean enabled) {

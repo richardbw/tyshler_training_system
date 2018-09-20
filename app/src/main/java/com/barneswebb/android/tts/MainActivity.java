@@ -1,7 +1,6 @@
 package com.barneswebb.android.tts;
 
-import static com.barneswebb.android.tts.trainingrec.ExerciseDataOpenHelper.*;
-
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -16,12 +15,9 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -46,7 +42,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -56,20 +51,14 @@ import java.util.Random;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import static com.barneswebb.android.tts.trainingrec.ExerciseDataOpenHelper.FIELD_NAMES;
+import static com.barneswebb.android.tts.trainingrec.ExerciseDataOpenHelper.ISO8601Format;
+
 public class MainActivity extends AppCompatActivity {
 
     private static final String  TAG            = "ttsMain";
 
     private static final int TOTAL_NO_PROGRAMMES = 8;
-    /**
-     * The {@link PagerAdapter} that will provide
-     * fragments for each of the sections. We use a
-     * {@link FragmentPagerAdapter} derivative, which will keep every
-     * loaded fragment in memory. If this becomes too memory intensive, it
-     * may be best to switch to a
-     * {@link FragmentStatePagerAdapter}.
-     */
-    private SectionsPagerAdapter mSectionsPagerAdapter;
     private Map<String,List<String>> soundList = new HashMap<>();
 
     protected static ExerciseDataOpenHelper db;
@@ -88,13 +77,10 @@ public class MainActivity extends AppCompatActivity {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.mainToolbar);
         setSupportActionBar(toolbar);
-        // Create the adapter that will return a fragment for each of the three
-        // primary sections of the activity.
-        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
         // Set up the ViewPager with the sections adapter.
         mCustomViewPager = (CustomViewPager) findViewById(R.id.custom_viewpager);
-        mCustomViewPager.setAdapter(mSectionsPagerAdapter);
+        mCustomViewPager.setAdapter(new SectionsPagerAdapter(getSupportFragmentManager()));
 
         tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mCustomViewPager);
@@ -195,7 +181,7 @@ public class MainActivity extends AppCompatActivity {
         new AlertDialog.Builder(this)
                 .setIcon(R.drawable.tyshler_0x3f51b5)
                 .setTitle("About")
-                .setMessage("(c) 2016 FencingMultimedia.com\n\nDevelopment:\nRichard@Barnes-Webb.com\n"+verString+"\nAndroid API ver: "+android.os.Build.VERSION.SDK_INT)
+                .setMessage("(c)2018 FencingMultimedia.com\n\nDevelopment:\nrichard@barnes-webb.com\n"+verString+"\nAndroid API ver: "+android.os.Build.VERSION.SDK_INT)
                 .setNeutralButton("Okay", new DialogInterface.OnClickListener() {
                     @Override public void onClick(DialogInterface dialog, int which)  { dialog.dismiss();  } })
                 .show();
@@ -211,7 +197,7 @@ public class MainActivity extends AppCompatActivity {
      */
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
-        public SectionsPagerAdapter(FragmentManager fm) {
+        SectionsPagerAdapter(FragmentManager fm) {
             super(fm);
         }
 
@@ -271,6 +257,7 @@ public class MainActivity extends AppCompatActivity {
             return fragment;
         }
 
+        @SuppressLint("SetJavaScriptEnabled")
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState)
@@ -284,7 +271,6 @@ public class MainActivity extends AppCompatActivity {
             chronometer = (Chronometer) rootView.findViewById(R.id.chronometer);
             currentSound  = (TextView) rootView.findViewById(R.id.current_sound);
 
-            final TextView currentSound = (TextView) rootView.findViewById(R.id.current_sound);
             final WebView excerciseText = (WebView) rootView.findViewById(R.id.excercise_text);
 
             excerciseText.getSettings().setJavaScriptEnabled(true);
@@ -356,17 +342,17 @@ public class MainActivity extends AppCompatActivity {
         }
 
         /** cache files, and return a list of the file names
-         * @thanks: http://stackoverflow.com/a/11615158 */
+         * thanks: http://stackoverflow.com/a/11615158 */
         private List<String> cacheFilesinSoundsZip() {
             currentSound.setText("Caching sounds...");
-            ArrayList<String> retList = new ArrayList<String>();
+            ArrayList<String> retList = new ArrayList<>();
             try {
                 ZipInputStream zipIs = new ZipInputStream(
                         getActivity().getResources().openRawResource(
                                 getResources().getIdentifier(currentProg+"_sounds", "raw", getActivity().getPackageName())
                         )
                 );
-                ZipEntry ze = null;
+                ZipEntry ze;
 
                 while ((ze = zipIs.getNextEntry()) != null) {
                     retList.add(ze.getName());
@@ -376,7 +362,7 @@ public class MainActivity extends AppCompatActivity {
                     if ((new File(cacheFileName).exists())) continue;  //if it's already cached then ignore
 
                     FileOutputStream fout = new FileOutputStream(cacheFileName);
-                    byte[] buffer = new byte[1024]; int length = 0;
+                    byte[] buffer = new byte[1024]; int length;
 
                     while ((length = zipIs.read(buffer))>0) {
                         fout.write(buffer, 0, length);

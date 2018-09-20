@@ -47,7 +47,17 @@
             android:configChanges="orientation"
             android:screenOrientation="portrait"
             />
-        <!--DELME activity android:name=".trainingrec.MyTrainingRecordActivity"></activity -->
+
+        <!-- https://stackoverflow.com/a/38858040 :  -->
+        <provider
+            android:name=".trainingrec.GenericFileProvider"
+            android:authorities="com.barneswebb.android.tts.trainingrec"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_paths"/>
+        </provider>
     </application>
 
 </manifest>

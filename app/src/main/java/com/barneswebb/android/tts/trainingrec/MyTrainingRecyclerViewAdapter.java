@@ -21,7 +21,7 @@ public class MyTrainingRecyclerViewAdapter extends RecyclerView.Adapter<MyTraini
     private final List<ExerciseSession> exerciseList;
     private final OnListFragmentInteractionListener mListener;
 
-    public MyTrainingRecyclerViewAdapter(List<ExerciseSession> items, OnListFragmentInteractionListener listener) {
+    MyTrainingRecyclerViewAdapter(List<ExerciseSession> items, OnListFragmentInteractionListener listener) {
         exerciseList = items;
         mListener = listener;
     }
@@ -59,15 +59,15 @@ public class MyTrainingRecyclerViewAdapter extends RecyclerView.Adapter<MyTraini
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        public final View mView;
-        public final TextView mIdView;
-        public final TextView mDateView;
-        public final TextView mCommentView;
-        public final TextView mCompltExView;
-        public final TextView mDurationView;
+        final View mView;
+        final TextView mIdView;
+        final TextView mDateView;
+        final TextView mCommentView;
+        final TextView mCompltExView;
+        final TextView mDurationView;
         public ExerciseSession exerciseSession;
 
-        public ViewHolder(View view) {
+        ViewHolder(View view) {
             super(view);
             mView = view;
             mIdView = (TextView) view.findViewById(R.id.training_rec_id);

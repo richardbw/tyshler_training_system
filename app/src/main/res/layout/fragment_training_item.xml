@@ -2,7 +2,8 @@
 <LinearLayout  xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="wrap_content"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content"
+    >
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="wrap_content"
@@ -25,16 +26,19 @@
                 android:id="@+id/training_rec_date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:text="training_rec_date"
                 android:textAppearance="?attr/textAppearanceListItem" />
             <TextView
                 android:id="@+id/training_rec_duration"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:text="training_rec_duration"
                 android:textAppearance="?attr/textAppearanceListItem" />
             <TextView
                 android:id="@+id/training_rec_exercz_cmplt"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:text="training_rec_exercz_cmplt"
                 android:textAppearance="?attr/textAppearanceListItem" />
 
         </LinearLayout>
@@ -47,7 +51,7 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:layout_marginBottom="@dimen/text_margin"
-        android:text="Medium Text"
+        android:text="training_rec_comment"
         />
 
 </LinearLayout>

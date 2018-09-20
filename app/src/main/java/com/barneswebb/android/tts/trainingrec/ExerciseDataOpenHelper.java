@@ -1,13 +1,4 @@
-/**
- * 
- */
 package com.barneswebb.android.tts.trainingrec;
-
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -17,6 +8,11 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 import com.barneswebb.android.tts.Debug;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author rbw
@@ -28,7 +24,7 @@ public class ExerciseDataOpenHelper extends SQLiteOpenHelper
     private static final String tag = ExerciseDataOpenHelper.class.getPackage().getName() + "]" + ExerciseDataOpenHelper.class.getSimpleName();
     private static final int DATABASE_VERSION = 1;
     private static final String TRAININGHISTORY_TABLE_NAME = "myTrainingHistory";
-    Context context;
+    private Context context;
     public static final String[] FIELD_NAMES = new String[]{"id", "userName", "excerzDate", "excerzDur", "program", "comments"};
     private static final String PRIMARY_KEY = FIELD_NAMES[0];
 
@@ -55,17 +51,17 @@ public class ExerciseDataOpenHelper extends SQLiteOpenHelper
         db.execSQL("DROP TABLE IF EXISTS " + TRAININGHISTORY_TABLE_NAME);
         Log.i(tag, "Creating new table: " + TRAININGHISTORY_TABLE_NAME);
 
-        String sqlStr = "CREATE TABLE " + TRAININGHISTORY_TABLE_NAME + "          (" ;
+        StringBuilder sqlStr = new StringBuilder("CREATE TABLE " + TRAININGHISTORY_TABLE_NAME + "          (");
         
         for (String f: FIELD_NAMES) {
-            sqlStr += f.equals(PRIMARY_KEY)?
-                " "+PRIMARY_KEY+"   INTEGER PRIMARY KEY AUTOINCREMENT " :
-                "    ,"+f+"         TEXT " ;
+            sqlStr.append(f.equals(PRIMARY_KEY) ?
+                             " " + PRIMARY_KEY + "   INTEGER PRIMARY KEY AUTOINCREMENT " :
+                             "    ," + f + "         TEXT ");
         }
-        sqlStr += ");";
+        sqlStr.append(");");
 
 
-        db.execSQL(sqlStr);
+        db.execSQL(sqlStr.toString());
     }
 
 
@@ -82,7 +78,7 @@ public class ExerciseDataOpenHelper extends SQLiteOpenHelper
     {
         Log.d(tag, "Loading exercise data....");
 
-        ArrayList<ExerciseSession> retArr = new ArrayList();
+        List<ExerciseSession> retArr = new ArrayList();
 
         SQLiteDatabase db = getReadableDatabase();
         Cursor cur;
@@ -104,10 +100,8 @@ public class ExerciseDataOpenHelper extends SQLiteOpenHelper
             return retArr;
         }
 
-
-        
         cur.moveToFirst();
-        while (cur.isAfterLast() == false) {
+        while ( ! cur.isAfterLast()) {
             retArr.add(
                 new ExerciseSession(
                        cur.getInt(0), //id;

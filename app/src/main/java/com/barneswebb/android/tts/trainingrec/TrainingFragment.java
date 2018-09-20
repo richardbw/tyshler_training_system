@@ -62,7 +62,13 @@ public class TrainingFragment extends Fragment {
             } else {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
-            recyclerView.setAdapter(new MyTrainingRecyclerViewAdapter(new ExerciseDataOpenHelper(getActivity()).getExerciseRowData(), mListener));
+
+            recyclerView.setAdapter(
+                    new MyTrainingRecyclerViewAdapter(
+                            new ExerciseDataOpenHelper(getActivity()).getExerciseRowData(),
+                            mListener
+                    )
+            );
         }
         return view;
     }
