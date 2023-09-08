@@ -10,7 +10,7 @@ android {
         applicationId "com.barneswebb.android.tts"
         minSdkVersion 23
         targetSdkVersion 33
-        versionCode 2
+        versionCode 3
         versionName "0.2"
     }
     buildTypes {
