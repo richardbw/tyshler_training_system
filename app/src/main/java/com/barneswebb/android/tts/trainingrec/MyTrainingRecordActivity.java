@@ -7,11 +7,12 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
-import android.support.v4.content.FileProvider;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.FileProvider;
 
 import com.barneswebb.android.tts.Debug;
 import com.barneswebb.android.tts.R;
@@ -35,7 +36,7 @@ public class MyTrainingRecordActivity extends AppCompatActivity implements Train
                 PreferenceManager.getDefaultSharedPreferences(MyTrainingRecordActivity.this).getString("username", "<not set>") + "'s Training Record"
         );
 
-        Objects.requireNonNull(findViewById(R.id.fab)).setOnClickListener(new View.OnClickListener() {
+        Objects.requireNonNull((View) findViewById(R.id.fab)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 new AlertDialog.Builder(MyTrainingRecordActivity.this)
@@ -53,7 +54,7 @@ public class MyTrainingRecordActivity extends AppCompatActivity implements Train
 
             }
         });
-        Objects.requireNonNull(findViewById(R.id.fab_email)).setOnClickListener(new View.OnClickListener()
+        Objects.requireNonNull((View) findViewById(R.id.fab_email)).setOnClickListener(new View.OnClickListener()
         {
             @Override public void onClick(View view) {
 

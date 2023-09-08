@@ -22,7 +22,7 @@
             android:layout_height="wrap_content" />
     </ScrollView>
 
-    <Space
+    <android.widget.Space
         android:id="@+id/spacer"
         android:layout_width="1dp"
         android:layout_height="30dp"

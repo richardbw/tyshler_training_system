@@ -11,13 +11,13 @@ import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
-import android.support.design.widget.TabLayout;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentPagerAdapter;
+
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -33,6 +33,7 @@ import android.widget.TextView;
 
 import com.barneswebb.android.tts.trainingrec.ExerciseDataOpenHelper;
 import com.barneswebb.android.tts.trainingrec.MyTrainingRecordActivity;
+import com.google.android.material.tabs.TabLayout;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -181,7 +182,7 @@ public class MainActivity extends AppCompatActivity {
         new AlertDialog.Builder(this)
                 .setIcon(R.drawable.tyshler_0x3f51b5)
                 .setTitle("About")
-                .setMessage("(c)2018 FencingMultimedia.com\n\nDevelopment:\nrichard@barnes-webb.com\n"+verString+"\nAndroid API ver: "+android.os.Build.VERSION.SDK_INT)
+                .setMessage("(c)2018,2023 FencingMultimedia.com\n\nDevelopment:\nrichard@barnes-webb.com\n"+verString+"\nAndroid API ver: "+android.os.Build.VERSION.SDK_INT)
                 .setNeutralButton("Okay", new DialogInterface.OnClickListener() {
                     @Override public void onClick(DialogInterface dialog, int which)  { dialog.dismiss();  } })
                 .show();
